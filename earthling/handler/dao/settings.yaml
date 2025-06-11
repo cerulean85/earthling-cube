@@ -1,0 +1,4 @@
+naver:
+  dao_file_path: 'earthling/handler/dao/pickles/naver.pickle'
+  data_type_names: [ 'web', 'blog', 'news' ]
+  test_index: 988857

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+service Earthling {
+  rpc Echo (EchoRequest) returns (EchoResponse) {}
+  rpc ReportIdleWorker (ReportRequest) returns (ReportResponse) {}
+  rpc NotifyTask (TaskRequest) returns (TaskResponse) {}
+}
+
+message EchoRequest {
+  string message = 1;
+}
+
+message EchoResponse {
+  string message = 1;
+}
+
+message ReportRequest {
+  string reportType = 1;
+}
+
+message ReportResponse {
+  int32 idleCount = 1;
+}
+
+message TaskRequest {
+  int32  taskNo = 1;
+  string message = 2;
+  string queueName = 3;
+}
+
+message TaskResponse {
+  string message = 1;
+  int32  idleCount = 2;
+}

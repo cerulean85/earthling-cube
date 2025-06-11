@@ -1,0 +1,43 @@
+db:
+  kkennibdb: 'postgresql://kkennibdb_owner:npg_jkHrWBdgzp24@ep-muddy-lake-a1424rms-pooler.ap-southeast-1.aws.neon.tech/kkennibdb?sslmode=require'
+
+    # address: '221.157.125.40' #'221.157.125.40'
+    # port: 3306,
+    # name: 'kkennibdb'
+    # username: 'kkennibdb_owner'
+    # password: 'npg_jkHrWBdgzp24'
+
+es:
+  address: '221.157.125.36'
+  port: 9200
+
+kafka:
+  address: '211.195.9.228'
+  port: 9092
+
+s3:
+  bucket_name: 'kkennib-s3'
+  region: 'ap-northeast-2'
+
+rpc:
+  # host:
+  #   address: '192.168.0.9'
+  #   port: 50152
+
+  mng-host:
+    address: '127.0.0.1'
+    port: 50153
+
+  manager:
+    address: '127.0.0.1'
+    port: 50153
+
+  ass-host:
+    address: '127.0.0.1'
+    port: 50156
+
+  assistant:
+    -
+      address: '127.0.0.1'
+      port: 50156
+      workers: [1000]

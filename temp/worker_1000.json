@@ -1,9 +1,9 @@
 {
 	"no": 1000,
-	"thread_no": 8164,
+	"thread_no": 18176,
 	"state": "idle",
 	"task": {
-		"task_no": 225,
-		"message": "{\"channel\": \"naver\", \"sub\": \"news\", \"state\": \"Y\"}"
+		"task_no": 223,
+		"message": "{\"site\": \"naver\", \"channel\": \"web\", \"state\": \"Y\"}"
 	}
 }

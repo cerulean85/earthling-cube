@@ -5,7 +5,7 @@ from psycopg2 import OperationalError
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-class MySQLPoolConnector:
+class DBPoolConnector:
 	_instance = None
 	db_address = 'localhost'
 	# username = 'user'
@@ -19,7 +19,7 @@ class MySQLPoolConnector:
 	@classmethod
 	def getInstance(cls):
 		if cls._instance is None:
-				cls._instance = MySQLPoolConnector()
+				cls._instance = DBPoolConnector()
 		return cls._instance
 
 	def getDBOption(self, name):

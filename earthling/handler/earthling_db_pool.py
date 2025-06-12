@@ -2,11 +2,10 @@ import os, sys
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import yaml
-from connector.MySQLPoolConnector import MySQLPoolConnector, execute
+from connector.DBPoolConnector import DBPoolConnector, execute
 
 
-class FirstEarthlingDBPool(MySQLPoolConnector):
+class FirstEarthlingDBPool(DBPoolConnector):
     name = "kkennibdb"
 
     def __init__(self):

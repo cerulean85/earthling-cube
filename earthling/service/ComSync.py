@@ -24,7 +24,7 @@ def consume():
         try:
             message = message.value
             task_no = message["task_no"]
-            channel = message["channel"]
+            site = message["site"]
             user_id = message["user_id"]
             print(f"({user_id})의 task-[{task_no}]를 처리 중입니다.")
 

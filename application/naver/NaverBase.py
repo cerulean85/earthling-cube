@@ -1,7 +1,7 @@
-import yaml, common as cmn
+from .. import common as cmn
 import urllib.request as urllib2
 import requests
-# from earthling.service.Logging import log
+
 class NaverBase:
 
     def get_page(self, url, driver, delay_time=3):
@@ -14,7 +14,6 @@ class NaverBase:
         driver.implicitly_wait(delay_time)
         driver.get(url)
         return html_status
-
 
     def get_page_with_session(self, url):
         html = ''
@@ -67,31 +66,12 @@ class NaverBase:
 
     def get_chrome_driver_path(self):
         return cmn.get_chrome_driver_path()
-        # log_file = settings.LOG_DATA_SAVE_PATH
-        # app_sttings_path = settings.APP_SETTINGS_PATH
-        # app_settings = None
-        # chrome_driver_path = ''
-        # with open(app_sttings_path) as f:
-        #     app_settings = yaml.load(f, Loader=yaml.FullLoader)
-        #     chrome_driver_path = app_settings["chrome_driver_path"]
-        # return chrome_driver_path
 
-    def get_settings(self, data_type=''):
-        return cmn.get_settings("naver", data_type)
-        # log_file = settings.LOG_DATA_SAVE_PATH
-        # app_sttings_path = settings.APP_SETTINGS_PATH
-        # app_settings = None
-        # with open(app_sttings_path) as f:
-        #     app_settings = yaml.load(f, Loader=yaml.FullLoader)
-        #     self.chrome_driver_path = app_settings["chrome_driver_path"]
-        #     app_settings = app_settings['naver']
-        #     if data_type != '':
-        #         app_settings = app_settings.get(data_type)
+    def get_settings(self, channel=''):
+        return cmn.get_settings("naver", channel)
 
-        # return app_settings
-
-    def set_cookie_jar(self, data_type):
-        self.cookie_jar = cmn.get_cookie_jar("naver", data_type)
+    def set_cookie_jar(self, channel):
+        self.cookie_jar = cmn.get_cookie_jar("naver", channel)
         try:
             self.cookie_jar.load()
         except Exception:

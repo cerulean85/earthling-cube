@@ -39,7 +39,7 @@ class ComManager(Com):
       # print(result)
       for message in result:
         # print(message)
-        channel = message['site']
+        site = message['site']
         task_no = message['id']
         assistant = self.monitor.get_compose()['assistant']
         assistant = assistant if assistant is not None else []
@@ -60,18 +60,18 @@ class ComManager(Com):
             print(f"Request task-{task_no} to Assistant Domain: {ass_addr}:{ass_port}")
             try:
               print(message)
-              sub = message['channel']
+              channel = message['channel']
               data_exec = message['state']
               if data_exec == 'Y':
-                  data_desc = { "channel": channel, "sub": sub, "state": data_exec }
-                  update_state_to_start(task_no, channel, ass_addr)
+                  data_desc = { "site": site, "channel": channel, "state": data_exec }
+                  update_state_to_start(task_no, site, ass_addr)
                   result = self.decorator.notifyTaskToAss(ass_addr, ass_port, task_no, json.dumps(data_desc))
                   result_message = json.loads(result.message)
                   is_success = result_message["is_success"]
                   err_message = result_message["err_message"]
 
                   if not is_success:
-                      update_state_to_wait(task_no, channel)
+                      update_state_to_wait(task_no, site)
                   break
             except Exception as err: 
                 print(err)

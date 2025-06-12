@@ -29,22 +29,20 @@ class ComWorker(Com):
         print(f"Task message 내용: {date_desc}")
         
         # 키 이름을 안전하게 확인하여 가져오기
-        if "sub" in date_desc:
-            data_type = date_desc["sub"]
-        elif "data_type_name" in date_desc:
-            data_type = date_desc["data_type_name"]
+        if "channel" in date_desc:
+            channel = date_desc["channel"]
         else:
             # 기본값 설정 또는 다른 키 찾기
             print(f"알려진 키가 없음. 사용 가능한 키들: {list(date_desc.keys())}")
-            data_type = "unknown"
+            channel = "unknown"
 
         self.monitor.write_worker(worker_meta)
-        print(f"Worker-[{self.worker_no.value}]가 task-[{task['task_no']}]의 '{data_type}'(을)를 시작합니다. (Thread: {threading.get_native_id()})")
-        print(f"Worker-[{self.worker_no.value}]가 task-[{task['task_no']}]의 '{data_type}'(을)를 처리중입니다.")
+        print(f"Worker-[{self.worker_no.value}]가 task-[{task['task_no']}]의 '{channel}'(을)를 시작합니다. (Thread: {threading.get_native_id()})")
+        print(f"Worker-[{self.worker_no.value}]가 task-[{task['task_no']}]의 '{channel}'(을)를 처리중입니다.")
 
         self.action(task)
         self.is_working.value = 0
-        print(f"Worker-[{self.worker_no.value}]가 task-[{task['task_no']}]의 '{data_type}'(을)를 완료하였습니다.")
+        print(f"Worker-[{self.worker_no.value}]가 task-[{task['task_no']}]의 '{channel}'(을)를 완료하였습니다.")
 
         worker_meta["state"] = "idle"
         self.monitor.write_worker(worker_meta)

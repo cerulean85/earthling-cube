@@ -1,14 +1,6 @@
 db:
   kkennibdb: 'postgresql://kkennibdb_owner:npg_jkHrWBdgzp24@ep-muddy-lake-a1424rms-pooler.ap-southeast-1.aws.neon.tech/kkennibdb?sslmode=require'
 
-es:
-  address: '221.157.125.36'
-  port: 9200
-
-kafka:
-  address: '211.195.9.228'
-  port: 9092
-
 s3:
   bucket_name: 'kkennib-s3'
   region: 'ap-northeast-2'
@@ -30,27 +22,29 @@ rpc:
     -
       address: '127.0.0.1'
       port: 50156
-      workers: [1000]
+      workers: [1000, 2000, 3000]
 
+
+wait_running_time_seconds: 50
 chrome_driver_path: "./chromedriver"
 
 naver:
   web:
     delay_time: 10
-    max_count: 10
+    max_count: 100
     unit_count: 15
 
   news:
     delay_time: 10
-    max_count: 10
+    max_count: 100
     unit_count: 10
 
   blog:
     delay_time: 10
-    max_count: 10
+    max_count: 100
 
   cafe:
-    delay_time: 10
+    delay_time: 100
     max_count: 1000
 
   academic:
@@ -61,9 +55,5 @@ naver:
     use_cookie_jar: True
   
   scrap_data_save_path: "/data/crawler/file_naver_data"
-  scrap_table_name: "scrap_status"
-  data_types: [ 'web', 'blog', 'news' ]
-  serialized_file_path: "application/naver/pickles"
-  country: 'kr'
   alias: 'naver'
   penalty_delay_time: 300

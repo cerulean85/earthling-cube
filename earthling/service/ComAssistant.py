@@ -35,8 +35,6 @@ class ComAssistant(Com):
                 idle_count = 0
                 workers = worker_pool.workers
                 
-                # print(f"현재 워커 수: {len(workers)}")
-                
                 for worker in workers:
                     # print(f"Worker-{worker.worker_no.value} 상태: {worker.is_working.value}")
                     is_working = True if worker.is_working.value > 0 else False
@@ -48,8 +46,6 @@ class ComAssistant(Com):
                     # 처리할 task가 없다면 idle_count + 1
                     if not is_working: 
                         idle_count = idle_count + 1
-
-                # print(f"현재 idle 워커 수: {idle_count}")
 
                 # idle count를 독립적으로 집계하여 업데이트함
                 self.decorator.set_idle_count(idle_count)                    

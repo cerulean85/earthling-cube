@@ -1,0 +1,9 @@
+{
+	"no": 2000,
+	"thread_no": 33452,
+	"state": "idle",
+	"task": {
+		"task_no": 4,
+		"message": "{\"site\": \"naver\", \"channel\": \"news\", \"state\": \"pending\"}"
+	}
+}

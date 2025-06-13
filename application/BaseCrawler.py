@@ -1,4 +1,4 @@
-import time, os, re, sys, pickle, application.common as cmn
+import time, os, re, sys, application.common as cmn
 import re
 
 from earthling.query import select_pipe_task_id, upload_file_to_s3, update_s3_file_url, update_scrap_status_count, update_scrap_status_start_date_to_now, update_state_to_completed, update_state_to_pending
@@ -7,15 +7,8 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from application.common import *
 
 class BaseCrawler:
-
     def get_data_poly(self, site, channel):
-        app_settings = cmn.get_settings(site=site)
-        serialized_file_path = app_settings.get("serialized_file_path")
-        poly_path = f"{serialized_file_path}/{channel}.pickle"
-        poly = None
-
-        with open(poly_path, 'rb') as file:
-            poly = pickle.load(file)
+        poly = get_site_channel_object(site, channel)
         return poly
 
     def exec_search(self, poly, data):
@@ -106,9 +99,7 @@ class BaseCrawler:
           out_file = open(create_file_name, 'r', encoding='utf-8')
           data_list = []
           for lines in out_file:
-            line = lines.split("\t")
-              
-            print(line)
+            line = lines.split("\t")            
               
             try :
                 title = str(line[0]).strip()

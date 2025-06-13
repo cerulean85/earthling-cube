@@ -34,3 +34,20 @@ def get_cookie_jar(site, data_name):
 
 def proc_html_status(html_status):
     print(f"Exited abnormally to collect. (HTTP STATUS: {html_status})")
+
+def get_site_channel_object(site, channel):
+    from application.naver.NaverBase import NaverBase
+    from application.naver.NaverWeb import NaverWeb
+    from application.naver.NaverBlog import NaverBlog
+    from application.naver.NaverNews import NaverNews
+
+    data_class = {
+      "naver": {
+          "base": NaverBase(),  
+          "web": NaverWeb(), 
+          "blog": NaverBlog(), 
+          "news": NaverNews()
+      },
+    }
+
+    return data_class[site][channel]

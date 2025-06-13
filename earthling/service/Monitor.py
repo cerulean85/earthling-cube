@@ -17,7 +17,7 @@ class Monitor:
         temp_dir = "./temp"
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir)
-            print(f"temp 디렉토리 생성: {temp_dir}")
+            print(f"temp Directory created: {temp_dir}")
         
         with open(f"./temp/worker_{worker_no}.json", "w") as fw:
             json.dump(worker, fw, indent="\t")

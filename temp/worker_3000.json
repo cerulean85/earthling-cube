@@ -1,7 +1,7 @@
 {
-	"no": 1000,
-	"thread_no": 31552,
-	"state": "working",
+	"no": 3000,
+	"thread_no": 4348,
+	"state": "idle",
 	"task": {
 		"task_no": 2,
 		"message": "{\"site\": \"naver\", \"channel\": \"blog\", \"state\": \"pending\"}"

@@ -6,12 +6,16 @@ python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. ./proto/Eart
 # ProtoBuf 생성 후 패키지 경로 조정이 필요함 => EarthlingProtocol_pb2_grpc.py from proto.. 로 수정하기
 '''
 
+import random
 import os, sys
+
+from earthling.query import select_wait_task, update_state_to_start, update_state_to_wait
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import time, json
 from earthling.proto.ManagerEarthling import ManagerEarthlingDecorator
-from earthling.handler.earthling_dao import *
+
 from multiprocessing import Process
 from earthling.service.Com import Com
 from earthling.service.Logging import log
@@ -62,16 +66,16 @@ class ComManager(Com):
               print(message)
               channel = message['channel']
               data_exec = message['state']
-              if data_exec == 'Y':
+              if data_exec == 'pending':
                   data_desc = { "site": site, "channel": channel, "state": data_exec }
-                  update_state_to_start(task_no, site, ass_addr)
+                  update_state_to_start(task_no, ass_addr)          
                   result = self.decorator.notifyTaskToAss(ass_addr, ass_port, task_no, json.dumps(data_desc))
                   result_message = json.loads(result.message)
                   is_success = result_message["is_success"]
                   err_message = result_message["err_message"]
 
                   if not is_success:
-                      update_state_to_wait(task_no, site)
+                      update_state_to_wait(task_no)
                   break
             except Exception as err: 
                 print(err)

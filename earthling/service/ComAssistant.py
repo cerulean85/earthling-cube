@@ -28,7 +28,6 @@ class ComAssistant(Com):
     def loop(self, worker_pool):
         # 프로세스 시작 시 task_queue 설정
         if self.task_queue is not None:
-            print(f"루프 프로세스에서 task_queue 재설정: {self.task_queue}")
             worker_pool.set_task_queue(self.task_queue)
         
         while True:

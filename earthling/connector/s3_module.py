@@ -2,7 +2,7 @@ import boto3, yaml
 
 def upload_file_to_s3(file_path, s3_file_key):
   s3 = boto3.client('s3')
-  with open(f'earth-compose.yml') as f:
+  with open(f'earth-compose.yaml') as f:
     compose = yaml.load(f, Loader=yaml.FullLoader)
     compose = compose['s3']
     bucket_name = compose['bucket_name']        
@@ -15,5 +15,5 @@ def upload_file_to_s3(file_path, s3_file_key):
     file_size = response['ContentLength']    
     return public_url, file_size
   except Exception as e:
-    print(f"❌ 객체 정보 조회 실패: {e}")
+    print(f"❌ Failed to search data: {e}")
     return '', 0

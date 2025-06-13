@@ -73,7 +73,7 @@ class WorkerPool:
     def _initialize_workers(self):
         """워커들을 초기화합니다."""
         try:
-            with open(f'earth-compose.yml') as f:
+            with open(f'earth-compose.yaml') as f:
                 compose = yaml.load(f, Loader=yaml.FullLoader)
                 compose = compose['rpc']
             

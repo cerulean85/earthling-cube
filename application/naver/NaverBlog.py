@@ -22,10 +22,6 @@ class NaverBlog(NaverBase):
             # url = "https://search.naver.com/search.naver?ssc=tab.blog.all&query="+str(keyword)+"&sm=tab_opt&dup_remove=1&post_blogurl=&post_blogurl_without=&nso=so%3Ar%2Ca%3Aall%2Cp%3Afrom"+(date_start)+"to"+(date_end)
             url = "https://search.naver.com/search.naver?ssc=tab.blog.all&query="+str(keyword)+"&sm=tab_opt&nso=so%3Ar%2Cp%3Afrom"+(date_start)+"to"+(date_end)
 
-#https://search.naver.com/search.naver?ssc=tab.blog.all&query=%EC%BD%94%EB%A1%9C%EB%82%98&sm=tab_opt&nso=so%3Ar%2Cp%3Afrom20250307to20250607
-
-        print(url)
-        print(url)
         return url
 
     def search(
@@ -64,7 +60,8 @@ class NaverBlog(NaverBase):
         scroll_count = 0 
 
         while True:
-            if scroll_count > 100:
+            settings = self.get_settings("blog")
+            if scroll_count > settings["max_count"]:
                 break
             
             try:
@@ -84,7 +81,7 @@ class NaverBlog(NaverBase):
 
             time.sleep(2)
             scroll_count += 1
-            print(f"task 수집 중 => 키워드: {keyword}, 기간: {date_start} ~ {date_end}, 카운트: {scroll_count}")
+            print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count: {scroll_count}")
             
 
         html_element = browser.page_source
@@ -98,7 +95,6 @@ class NaverBlog(NaverBase):
         stat =0
         
         list_html = soup.find_all('div', {'class' : 'detail_box'})
-        print(list_html)
         for temp_html in list_html:
             temp_html = BeautifulSoup(str(temp_html),"html.parser")
 
@@ -132,14 +128,10 @@ class NaverBlog(NaverBase):
             try:
                 scrape_text = title_text + '\t' + a_link +'\t'+ content_text
                 out_file.write(scrape_text + '\n')
-                print(scrape_text[0:100])
                 count_web = count_web + 1
             except Exception as err:
                 print(err)
                 break
-
-
-            # TODO: 전체수집 개발        
 
         browser.quit()
         out_file.close()

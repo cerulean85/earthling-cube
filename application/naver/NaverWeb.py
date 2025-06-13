@@ -5,9 +5,6 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
-# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-# from earthling.service.Logging import log
-# import application.settings as settings
 from .NaverBase import NaverBase
 from datetime import datetime, timedelta
 
@@ -86,11 +83,11 @@ class NaverWeb(NaverBase):
 
             try:
                 if len(web_list) == 0:
-                    print(f"[{tar_date}]의 데이터가 존재하지 않습니다.")
+                    print(f"The data for [{tar_date}] does not exist.")
                     total_date_count -= 1
                     break
             except:
-                print(f"[{tar_date}]의 데이터가 존재하지 않습니다.")
+                print(f"The data for [{tar_date}] does not exist.")
                 total_date_count -= 1
                 break
 
@@ -114,7 +111,7 @@ class NaverWeb(NaverBase):
 
                 try:
                     if count_web >= settings["max_count"]:
-                        print(f"수집 개수가 [{count_web}]개에 도달하여 수집을 종료합니다.")
+                        print(f"Collection stopped because the number of collected items has reached [{count_web}].")
                         fin = True
                         break
                     
@@ -131,14 +128,14 @@ class NaverWeb(NaverBase):
             unit_max_count = settings["max_count"] / total_date_count
             start = start + web_unit_count
             if len(web_list) < web_unit_count: 
-                print(f"task 수집 중 => 키워드: {keyword}, 기간: {date_start} ~ {date_end}, 카운트:  {count_web} / {total_max_count}, (인덱스: {start})")
+                print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
                 break
             
             if start >= unit_max_count: 
-                print(f"task 수집 중 => 키워드: {keyword}, 기간: {date_start} ~ {date_end}, 카운트:  {count_web} / {total_max_count}, (인덱스: {start})")
+                print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
                 break
 
-            print(f"task 수집 중 => 키워드: {keyword}, 기간: {date_start} ~ {date_end}, 카운트:  {count_web} / {total_max_count}, (인덱스: {start})")
+            print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
 
 
         if fin:

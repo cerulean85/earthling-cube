@@ -33,4 +33,4 @@ def get_cookie_jar(site, data_name):
     return cookie_jar
 
 def proc_html_status(html_status):
-    print(f"수집 작업이 비정상적으로 종료되었습니다 (HTTP STATUS: {html_status})")
+    print(f"Exited abnormally to collect. (HTTP STATUS: {html_status})")

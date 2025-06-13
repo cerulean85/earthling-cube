@@ -1,11 +1,11 @@
 import os, sys, yaml
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from earthling.query import get_collection_cond, update_state_to_finish
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from earthling.service.ComAssistant import *
-from earthling.service.Logging import log
-
-import time, json, application.settings as settings
-from handler.earthling_dao import get_dao, update_state_to_finish, get_collection_cond
+import json, application.settings as settings
 
 def set_directory(site):
     log_file = settings.LOG_DATA_SAVE_PATH
@@ -25,9 +25,8 @@ def set_directory(site):
 
 def get_crawler(site):
     crawler = None
-    dao = get_dao(site)
     from application.BaseCrawler import BaseCrawler
-    crawler = BaseCrawler(site, dao)
+    crawler = BaseCrawler(site)
     return crawler
 
 def action(message):
@@ -38,16 +37,14 @@ def action(message):
     channel = data_type["channel"]
     set_directory(site)
 
-    result = get_collection_cond(task_no, site)
+    result = get_collection_cond(task_no)
     row = result[0] if len(result) else None
     if row is not None:
         crawler = get_crawler(site)
-        crawler.factory(task_no, row, site, channel)
-        update_state_to_finish(task_no, site)
-    else:
-        # print(f"다음의 쿼리에서 검색된 레코드가 없습니다 => {query}")
-        print(f"데이터베이스 접속 정보를 확인하세요. 개발? 운영?")
-        print(f"From cube-assistant.py")
+        crawler.factory(task_no, row, site, channel)        
+        update_state_to_finish(task_no)
+    else:      
+        print(f"Confirm DB connection info.")
 
 if __name__ == "__main__":
     run(action)

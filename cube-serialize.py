@@ -1,14 +1,6 @@
 import os, sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from earthling.service.Logging import log
-from earthling.handler.dao.BaseDAO import BaseDAO
-from earthling.handler.dao.NaverDAO import NaverDAO
-
-dao_class = {
-    "naver": NaverDAO(),
-}
-
 from application.naver.NaverBase import NaverBase
 from application.naver.NaverWeb import NaverWeb
 from application.naver.NaverBlog import NaverBlog
@@ -23,25 +15,8 @@ data_class = {
   },
 }
 
-
 import pickle, yaml
 if __name__ == "__main__":
-
-    dao_settings = None
-    with open("earthling/handler/dao/settings.yaml") as f:
-        dao_settings = yaml.load(f, Loader=yaml.FullLoader)
-
-        for channel in list(dao_settings.keys()):
-            dao = None
-            channel_setting = dao_settings.get(channel)
-            dao_file_path = channel_setting.get("dao_file_path")
-            dao = dao_class.get(channel)
-            if dao is None:
-                continue
-            
-            with open(dao_file_path, 'wb') as file:
-                print(dao_file_path)
-                pickle.dump(dao, file)
 
     app_settings = None
     with open("application/settings.yaml") as f:

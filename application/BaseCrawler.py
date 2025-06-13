@@ -1,20 +1,10 @@
 import time, os, re, sys, pickle, application.common as cmn
 import re
 
-from handler.earthling_dao import update_s3_file_url
+from earthling.query import select_pipe_task_id, upload_file_to_s3, update_s3_file_url, update_scrap_status_count, update_scrap_status_start_date_to_now, update_state_to_completed, update_state_to_pending
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-# from application.naver.NaverBase   import NaverBase
-# from application.google.GoogleBase  import GoogleBase
-# from application.baidu.BaiduBase   import BaiduBase
-# from earthling.handler.dao.NaverDAO import NaverDAO
-# from earthling.handler.dao.GoogleDAO import GoogleDAO
-# from earthling.handler.dao.BaiduDAO import BaiduDAO
-
 from application.common import *
-from earthling.service.Logging import log
-from earthling.handler.earthling_es import insert_list_to_es
-from earthling.handler.earthling_s3 import upload_file_to_s3
 
 class BaseCrawler:
 
@@ -29,7 +19,6 @@ class BaseCrawler:
         return poly
 
     def exec_search(self, poly, data):
-        print("Date =>>>>>>> ", data)
         create_file_name, item_count, html_status = poly.search(
                 data["keyword"], 
                 idx_num = str(data["task_no"]), 
@@ -40,26 +29,22 @@ class BaseCrawler:
 
         return create_file_name, item_count, html_status
 
-    def __init__(self, site, dao):
+    def __init__(self, site):
         self.site = site
         self.base = self.get_data_poly(site, "base")
-        self.dao = dao
 
     def factory(self, task_no, row, site, channel):
       if row == None:
-        print(f"task-[{task_no}]를 수집할 수 없습니다. KEYWORD_LIST 혹은 SCRAW_NAVER_DATAINFO 테이블에서 [{task_no}]를 확인하세요.")
+        print(f"Can't collect task-[{task_no}] Data. Confirm KEYWORD_LIST or SCRAW_NAVER_DATAINFO [{task_no}]from table.")
         return
 
-      print("site", site)
-      print("channel", channel)
-
       keyword, date_start, date_end = row["keyword"], row["scrap_start_date"], row["scrap_end_date"]
-      print(f"수집정보 => 채널: {site}, 유형: {channel}, 키워드: {keyword}, 기간: {date_start} ~ {date_end}")
+      print(f"Collecting info => Site: {site}, Channel: {channel}, Keyword: {keyword}, Date: {date_start} ~ {date_end}")
 
       poly = self.get_data_poly(site, channel) 
       if poly is not None:
 
-        self.dao.update_scrap_status_start_date_to_now(task_no)
+        update_scrap_status_start_date_to_now(task_no)
         search_data = {
             "keyword": keyword, 
             "task_no": str(task_no), 
@@ -71,13 +56,13 @@ class BaseCrawler:
 
         create_file_name, item_count, html_status = self.exec_search(poly, search_data)
         if html_status == 200:
-          self.dao.update_state_to_N(task_no)
+          update_state_to_completed(task_no)
           self.save(task_no, channel, create_file_name, item_count)
-          print(f"데이터 수집을 정상적으로 완료하였습니다.")
+          print(f"Finished to collect [task-{task_no}] data")
 
         else:
-          self.dao.update_state_to_Y(task_no)
-          print(f"데이터 수집에 실패하였습니다. (HTML STATUS: {html_status})")
+          update_state_to_pending(task_no)
+          print(f"Failed to collect data (HTML STATUS: {html_status})")
           penalty_delay_time = settings['penalty_delay_time']
           time.sleep(penalty_delay_time)
     
@@ -95,29 +80,28 @@ class BaseCrawler:
         return alias
 
     def generate_s3_file_key(self, file_path, task_no, site, channel):
-        """파일 경로에서 확장명을 추출하고 timestamp와 결합하여 S3 파일 키 생성"""
-        # 파일 확장명 추출
+
         file_extension = os.path.splitext(file_path)[1]  # .txt, .csv 등
         
         # timestamp 생성
         now = time.localtime()
         timestamp = f"{now.tm_year}{now.tm_mon:02d}{now.tm_mday:02d}_{now.tm_hour:02d}{now.tm_min:02d}{now.tm_sec:02d}"
         
-        # S3 파일 키 생성: channel/data_type/task_번호_timestamp.확장명
+        # Create S3 File Key: channel/data_type/task_[number]_timestamp.[ext]
         s3_file_key = f"{site}/{channel}/task_{task_no}_{timestamp}{file_extension}"
         
         return s3_file_key
 
     def save(self, task_no, channel, create_file_name, item_count):
         p = re.compile(f"""\n+""")
-        result = self.dao.select_pipe_task_id(task_no)
-        row = result[0] if len(result) > 0 else None
+        result = select_pipe_task_id(task_no)
+        row = result[0] if result and len(result) > 0 else None
         if row is not None:
           site_alias = self.get_site_alias(self.site)
           pipe_task_id = row["pipe_task_id"]
           
           s3_file_key = self.generate_s3_file_key(create_file_name, task_no, self.site, channel)
-          print(f"생성된 S3 파일 키: {s3_file_key}")
+          print(f"Created S3 File Key: {s3_file_key}")
           
           out_file = open(create_file_name, 'r', encoding='utf-8')
           data_list = []
@@ -129,18 +113,18 @@ class BaseCrawler:
             try :
                 title = str(line[0]).strip()
             except Exception as err:
-                print("0 >> ", err)
+                print("Save: 0 >> ", err)
                 title = ""
             try:
                 url = str(line[1]).strip()
             except Exception as err:
-                print("1 >> ", err)
+                print("Save: 1 >> ", err)
                 url = ""
             try :
                 text = str(line[2]).strip()
                 re_text = p.sub(" ", text)
             except Exception as err:
-                print("2 >> ", err)
+                print("Save: 2 >> ", err)
                 text = ""
                 re_text = ""
             
@@ -157,29 +141,29 @@ class BaseCrawler:
             try:  
               if len(data_list) > 100:
                 s3_file_url, file_size = upload_file_to_s3(create_file_name)
-                update_s3_file_url(task_no, self.site, s3_file_url, file_size)
+                update_s3_file_url(task_no, s3_file_url, file_size)
                 data_list = []
-                print(f"task-[{task_no}]의 ({len(data_list)})개의 데이터가 S3에 저장되었습니다.")
+                print(f"task-[{task_no}] ({len(data_list)}) Count Data Saved to S3.")
             except Exception as err:
-                print("3 >> ", err)
+                print("Save: 3 >> ", err)
                 pass
           
           try :                
             if len(data_list) > 0:
               # insert_list_to_es(data_list, es_index_name, "channel")
               s3_file_url, file_size = upload_file_to_s3(create_file_name)
-              update_s3_file_url(task_no, self.site, s3_file_url, file_size)
-              print(f"task-[{task_no}]의 ({len(data_list)})개의 데이터가 S3에 저장되었습니다.")
+              update_s3_file_url(task_no, s3_file_url, file_size)
+              print(f"task-[{task_no}] ({len(data_list)}) Count Data Saved to S3.")
           except Exception as err:
-            print("4 >> ", err)
+            print("Save: 4 >> ", err)
             pass
 
           out_file.close()
           
-          self.dao.update_scrap_status_count(task_no, item_count)
+          update_scrap_status_count(task_no, item_count)
 
           try:
             os.remove(create_file_name)
           except Exception as err:
-            print("5 >> ", err)
+            print("Save: 5 >> ", err)
             pass

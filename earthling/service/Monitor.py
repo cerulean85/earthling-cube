@@ -5,7 +5,7 @@ from .Logging import log
 class Monitor:
     def get_compose(self):
         compose = ''
-        with open(f'earth-compose.yml') as f:
+        with open(f'earth-compose.yaml') as f:
             compose = yaml.load(f, Loader=yaml.FullLoader)
             compose = compose['rpc']
         return compose

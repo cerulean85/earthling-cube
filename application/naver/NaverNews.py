@@ -3,14 +3,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service  # Service 추가
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-# from earthling.service.Logging import log
-# import application.settings as settings
-# from application.naver.NaverBase import NaverBase
 from .NaverBase import NaverBase
-import requests
 
 class NaverNews(NaverBase):
     
@@ -23,11 +18,6 @@ class NaverNews(NaverBase):
         else:
             # url = "https://search.naver.com/search.naver?where=news&query="+str(keyword)+"&sm=tab_opt&dup_remove=1&post_blogurl=&post_blogurl_without=&start="+str(start)+"&nso=so%3Ar%2Ca%3Aall%2Cp%3Afrom"+(date_start)+"to"+(date_end)
             url = "https://search.naver.com/search.naver?ssc=tab.news.all&query="+str(keyword)+"&sm=tab_opt&nso=so%3Ar%2Cp%3Afrom"+(date_start)+"to"+(date_end)
-
-        print(url)
-        print(url)
-        print(url)
-        print(url)
         return url
 
     # 메인 함수
@@ -48,7 +38,6 @@ class NaverNews(NaverBase):
         chrome_driver_path = self.get_chrome_driver_path()
         
         chrome_options = Options()
-        # 기존 chrome_options 설정 (예: headless 모드 등)
         chrome_options.add_argument('--headless')  # 예시: headless 모드
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')        
@@ -112,7 +101,6 @@ class NaverNews(NaverBase):
 
                 try:
                     scrape_text = title_text + '\t' + a_link +'\t'+ content_text
-                    print(f"Count: {len(list_html)}, {scrape_text}")
                     out_file.write(scrape_text + '\n')
                     count_web = count_web + 1
                 except Exception as err:
@@ -131,11 +119,8 @@ class NaverNews(NaverBase):
                 return creat_file_name, count_web, html_status
             
 
-            print(f"task 수집 중 => 키워드: {keyword}, 기간: {date_start} ~ {date_end}, 카운트: {start}")
+            print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count: {start}")     
 
-            # TODO: 전체수집 개발        
-
-            
         
         browser.quit()
         out_file.close()

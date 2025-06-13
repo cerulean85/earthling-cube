@@ -1,15 +1,11 @@
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-import grpc, threading, time, json
+import grpc, json
 import earthling.proto.EarthlingProtocol_pb2 as EarthlingProtocol_pb2
 import earthling.proto.EarthlingProtocol_pb2_grpc as EarthlingProtocol_pb2_grpc
 from earthling.proto.Earthling import Earthling
 from concurrent import futures
-from earthling.service.Logging import log
-from multiprocessing import Process
-from earthling.service.ComWorker import WorkerPool
-# from handler.earthling_dao import *
 
 class AssistantEarthling(Earthling):
 
@@ -44,8 +40,6 @@ class AssistantEarthling(Earthling):
         
         if self.idle_count.value > 0:
             message = json.loads(request.message)
-            channel = message['channel'] 
-            # update_state_to_finish(request.taskNo)
             self.idle_count.value = self.idle_count.value - 1
             self.worker_pool.push_task(task)
         else:

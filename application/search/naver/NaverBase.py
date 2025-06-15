@@ -1,4 +1,5 @@
-from .. import common as cmn
+from application import common as cmn
+from application.search import util
 import urllib.request as urllib2
 import requests
 
@@ -8,7 +9,7 @@ class NaverBase:
         resp = requests.get(url)
         html_status = resp.status_code
         if html_status != 200:
-            cmn.proc_html_status(html_status)
+            util.proc_html_status(html_status)
             return html_status
 
         driver.implicitly_wait(delay_time)
@@ -65,13 +66,13 @@ class NaverBase:
         pass
 
     def get_chrome_driver_path(self):
-        return cmn.get_chrome_driver_path()
+        return util.get_chrome_driver_path()
 
     def get_settings(self, channel=''):
-        return cmn.get_settings("naver", channel)
+        return cmn.get_site_settings("naver", channel)
 
     def set_cookie_jar(self, channel):
-        self.cookie_jar = cmn.get_cookie_jar("naver", channel)
+        self.cookie_jar = util.get_cookie_jar("naver", channel)
         try:
             self.cookie_jar.load()
         except Exception:

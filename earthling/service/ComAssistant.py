@@ -26,7 +26,7 @@ class ComAssistant(Com):
                 break
 
     def loop(self, worker_pool):
-        # 프로세스 시작 시 task_queue 설정
+        # Set task_queue when process starts
         if self.task_queue is not None:
             worker_pool.set_task_queue(self.task_queue)
         
@@ -36,22 +36,22 @@ class ComAssistant(Com):
                 workers = worker_pool.workers
                 
                 for worker in workers:
-                    # print(f"Worker-{worker.worker_no.value} 상태: {worker.is_working.value}")
+                    # print(f"Worker-{worker.worker_no.value} state: {worker.is_working.value}")
                     is_working = True if worker.is_working.value > 0 else False
 
-                    # task가 있다면 유휴한 Worker를 실행
+                    # If there is a task, run an idle Worker
                     if not is_working: 
                         is_working = worker_pool.pop_work()
                         
-                    # 처리할 task가 없다면 idle_count + 1
+                    # If there are no tasks to process, increment idle_count
                     if not is_working: 
-                        idle_count = idle_count + 1
+                        idle_count += 1
 
-                # idle count를 독립적으로 집계하여 업데이트함
+                # Update idle count independently
                 self.decorator.set_idle_count(idle_count)                    
 
             except Exception as err:
-                print(f"루프 오류: {err}")
+                print(f"Loop error: {err}")
                 print("Can't connect remote...")
                 time.sleep(1)
                 pass    
@@ -69,25 +69,25 @@ def run(action):
     host_addr, host_port =  compose['ass-host']['address'], compose['ass-host']['port']
     
     task_queue = Queue() # Shared Queue
-    print("메인 프로세스에서 task_queue 생성 및 설정")
+    print("Create and set task_queue in main process")
     worker_pool = WorkerPool.getInstance(action)
-    worker_pool.set_task_queue(task_queue)  # Shared Queue 설정
+    worker_pool.set_task_queue(task_queue)  # Set Shared Queue
 
     shared_idle_count = Value('i', 0) # Shared Variable
-    earthling = proto.AssistantEarthling(shared_idle_count, worker_pool) # Shared Variable 설정
-    decorator = proto.AssistantEarthlingDecorator(earthling) # Decorate Target 객체 설정
-    ass = ComAssistant(decorator, task_queue) # task_queue를 ComAssistant에 전달
+    earthling = proto.AssistantEarthling(shared_idle_count, worker_pool) # Set Shared Variable
+    decorator = proto.AssistantEarthlingDecorator(earthling) # Set Decorate Target object
+    ass = ComAssistant(decorator, task_queue) # Pass task_queue to ComAssistant
 
-    # Manager Server 연결 확인
+    # Check Manager Server connection
     message = str(host_port) if 'int' in str(type(host_port)) else host_port
     try:
         echoed = ass.decorator.echo(mng_addr, mng_port, message)
-        print(f"Manager로부터 받은 echo 메시지: {echoed}")
+        print(f"Echo message received from Manager: {echoed}")
     except Exception as err:
-        print(f"Manager 서버 연결 실패: {err}")
-        print("Manager 서버에 연결할 수 없습니다.")
+        print(f"Failed to connect to Manager server: {err}")
+        print("Cannot connect to Manager server.")
 
-    # 프로세스 시작 - task_queue는 ComAssistant 내부에서 처리됨
+    # Start process - task_queue is handled inside ComAssistant
     p = Process(target=ass.loop, args=(worker_pool,))
     p.start()
 

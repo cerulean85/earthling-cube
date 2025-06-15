@@ -22,26 +22,25 @@ rpc:
     -
       address: '127.0.0.1'
       port: 50156
-      workers: [1000, 2000, 3000]
+      workers: [1000, 2000, 3000, 4000, 5000]
 
-
-wait_running_time_seconds: 50
 chrome_driver_path: "./chromedriver"
+pending_discovery_count: 10
 
 naver:
   web:
     delay_time: 10
-    max_count: 100
+    max_count: 1000
     unit_count: 15
 
   news:
     delay_time: 10
-    max_count: 100
+    max_count: 1000
     unit_count: 10
 
   blog:
     delay_time: 10
-    max_count: 100
+    max_count: 1000
 
   cafe:
     delay_time: 100
@@ -54,6 +53,6 @@ naver:
     unit_count: 10     #ACADEMIC_UNIT_COUNT
     use_cookie_jar: True
   
-  scrap_data_save_path: "/data/crawler/file_naver_data"
+  search_data_save_path: "/data/crawler/file_naver_data"
   alias: 'naver'
   penalty_delay_time: 300

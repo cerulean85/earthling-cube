@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 from .NaverBase import NaverBase
 from datetime import datetime, timedelta
+from earthling.service.Logging import log
 
 class NaverWeb(NaverBase):
 
@@ -111,16 +112,16 @@ class NaverWeb(NaverBase):
 
                 try:
                     if count_web >= settings["max_count"]:
-                        print(f"Collection stopped because the number of collected items has reached [{count_web}].")
+                        log.debug(f"Collection stopped because the number of collected items has reached [{count_web}].")
                         fin = True
                         break
                     
                     count_web = count_web + 1
-                    scrape_text = title_text + '\t' + a_link +'\t'+ content_text
-                    out_file.write(scrape_text + '\n')
+                    search_text = title_text + '\t' + a_link +'\t'+ content_text
+                    out_file.write(search_text + '\n')
                 except Exception as err:
                     # print(err)
-                    print(err)
+                    log.debug(err)
                     continue
 
             total_max_count = settings["max_count"]                
@@ -128,14 +129,14 @@ class NaverWeb(NaverBase):
             unit_max_count = settings["max_count"] / total_date_count
             start = start + web_unit_count
             if len(web_list) < web_unit_count: 
-                print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
+                log.debug(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
                 break
             
             if start >= unit_max_count: 
-                print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
+                log.debug(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
                 break
 
-            print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
+            log.debug(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count:  {count_web} / {total_max_count}, (Index: {start})")
 
 
         if fin:

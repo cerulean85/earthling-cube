@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 
 # sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-# from earthling.service.Logging import log
+from earthling.service.Logging import log
 # import application.settings as settings
 from .NaverBase import NaverBase
 
@@ -81,7 +81,7 @@ class NaverBlog(NaverBase):
 
             time.sleep(2)
             scroll_count += 1
-            print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count: {scroll_count}")
+            log.debug(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count: {scroll_count}")
             
 
         html_element = browser.page_source
@@ -126,8 +126,8 @@ class NaverBlog(NaverBase):
                 content_text = ""
 
             try:
-                scrape_text = title_text + '\t' + a_link +'\t'+ content_text
-                out_file.write(scrape_text + '\n')
+                search_text = title_text + '\t' + a_link +'\t'+ content_text
+                out_file.write(search_text + '\n')
                 count_web = count_web + 1
             except Exception as err:
                 print(err)

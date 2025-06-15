@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 from .NaverBase import NaverBase
+from earthling.service.Logging import log
 
 class NaverNews(NaverBase):
     
@@ -100,11 +101,11 @@ class NaverNews(NaverBase):
                     content_text = ""                      
 
                 try:
-                    scrape_text = title_text + '\t' + a_link +'\t'+ content_text
-                    out_file.write(scrape_text + '\n')
+                    search_text = title_text + '\t' + a_link +'\t'+ content_text
+                    out_file.write(search_text + '\n')
                     count_web = count_web + 1
                 except Exception as err:
-                    print(err)
+                    log.debug(err)
                     continue
 
             settings = self.get_settings("news")
@@ -119,7 +120,7 @@ class NaverNews(NaverBase):
                 return creat_file_name, count_web, html_status
             
 
-            print(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count: {start}")     
+            log.debug(f"task Collecting => Keyword: {keyword}, Date: {date_start} ~ {date_end}, Count: {start}")     
 
         
         browser.quit()

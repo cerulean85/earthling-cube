@@ -40,6 +40,7 @@ def search(task, task_no, site, channel):
     set_log_dir()
     
     if task is not None:
+        q_inst.update_state_to_pending(task_no)
         app = SearchApplication(site)
         app.execute(task_no, task, site, channel)
         q_inst.update_state_to_finish(task_no)

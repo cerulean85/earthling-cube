@@ -23,6 +23,7 @@ print(f"Manager로부터 받은 echo 메시지: {message}")
 import logging
 import datetime
 import logging.handlers
+import time
 class Logging:    
     _instance = None
     logger = None
@@ -50,7 +51,9 @@ class Logging:
         # filehandler.setFormatter(formatter)
         # self.logger.addHandler(filehandler)
 
-        filename = 'logs/logfile.log'  # 파일명 ...
+        # 파일명을 timestamp로 지정
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        filename = f'logs/logfile_{timestamp}.log'
         timedfilehandler = logging.handlers.TimedRotatingFileHandler(filename=filename, when='midnight', interval=1, encoding='utf-8')
         timedfilehandler.setFormatter(formatter)
         timedfilehandler.suffix = "%Y%m%d"

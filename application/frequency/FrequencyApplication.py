@@ -8,9 +8,9 @@ from earthling.connector.s3_module import read_file_from_s3
 
 class FrequencyApplication:
     def execute(self, task):
-        prev_task_id = task["prev_task_id"]
+        clean_task_id = task["clean_task_id"]
         query = QueryPipeTaskClean()
-        searched = query.get_task_by_id(prev_task_id)
+        searched = query.get_task_by_id(clean_task_id)
 
         query = QueryPipeTaskFrequency()
         task_no = task["id"]
@@ -20,12 +20,11 @@ class FrequencyApplication:
         converted_to_json = json.loads(resource_origin)
         converted = cmn.convert_json_to_morph(converted_to_json)
 
-        merged = [item for sublist in converted for item in sublist]
-        words = [item[0] for item in merged]
-        freq_table = Counter(words).most_common()
+        merged = [tuple(item) for sublist in converted for item in sublist]
+        freq_table = Counter(merged).most_common()
         freq_list = []
-        for key, value in dict(freq_table).items():
-            freq_list.append({ "word": key, "count": value })
+        for (word, pos), count in dict(freq_table).items():
+            freq_list.append({ "word": word, "pos": pos, "count": count })
         
         top_n = 100
         filename = cmn.get_save_filename(cmn.AppType.FREQUENCY)
@@ -38,7 +37,7 @@ class FrequencyApplication:
 
 if __name__ == "__main__":
     app = FrequencyApplication()
-    app.execute({"id": 1, "prev_task_id": 1})
+    app.execute({"id": 26, "clean_task_id": 26})
 
 
 

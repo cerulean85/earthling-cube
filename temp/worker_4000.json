@@ -1,0 +1,9 @@
+{
+	"no": 4000,
+	"thread_no": 41696,
+	"state": "working",
+	"task": {
+		"task_no": 24,
+		"message": "{\"id\": 24, \"pipe_line_id\": 22, \"current_state\": \"pending\", \"worker_ip\": null, \"start_date\": null, \"end_date\": null, \"create_date\": \"2025-06-25 19:07:32.013888\", \"s3_url\": null, \"file_size\": 0.0, \"search_task_id\": 64, \"clean_task_id\": 26, \"mem_id\": 6, \"task_type\": \"tfidf\"}"
+	}
+}

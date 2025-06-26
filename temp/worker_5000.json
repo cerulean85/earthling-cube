@@ -1,0 +1,9 @@
+{
+	"no": 5000,
+	"thread_no": 40116,
+	"state": "working",
+	"task": {
+		"task_no": 6,
+		"message": "{\"id\": 6, \"pipe_line_id\": 3, \"site\": \"naver\", \"channel\": \"blog\", \"current_state\": \"pending\", \"search_keyword\": \"\\ucf54\\ub85c\\ub098\", \"search_start_date\": \"2023-01-01 00:00:00\", \"search_end_date\": \"2023-01-15 00:00:00\", \"worker_ip\": \"\", \"start_date\": \"2025-06-15 18:52:19.627964\", \"end_date\": \"2025-06-15 18:33:33.035312\", \"create_date\": \"2025-06-14 04:42:47.017695\", \"count\": 0, \"s3_url\": \"\", \"file_size\": 0.0, \"task_type\": \"search\"}"
+	}
+}

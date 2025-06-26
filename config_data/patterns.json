@@ -1,0 +1,74 @@
+{
+  "morpheme_ending_repetition": {
+    "patterns": [
+      "다다+$",
+      "요요+$",
+      "네네+$",
+      "죠죠+$"
+    ],
+    "description": "Morpheme patterns for ending_repetition",
+    "active": true,
+    "updated_at": "2025-06-25T21:51:54.515878",
+    "version": "dcd36f46"
+  },
+  "morpheme_particle_repetition": {
+    "patterns": [
+      "는는+$",
+      "이이+$",
+      "가가+$",
+      "을을+$"
+    ],
+    "description": "Morpheme patterns for particle_repetition",
+    "active": true,
+    "updated_at": "2025-06-25T21:51:54.524908",
+    "version": "da7eea91"
+  },
+  "morpheme_adverb_repetition": {
+    "patterns": [
+      "너무너무+",
+      "정말정말+",
+      "완전완전+"
+    ],
+    "description": "Morpheme patterns for adverb_repetition",
+    "active": true,
+    "updated_at": "2025-06-25T21:51:54.533906",
+    "version": "99f22058"
+  },
+  "morpheme_intensifier_stack": {
+    "patterns": [
+      "개개+",
+      "진짜진짜+",
+      "겁나겁나+"
+    ],
+    "description": "Morpheme patterns for intensifier_stack",
+    "active": true,
+    "updated_at": "2025-06-25T21:51:54.542900",
+    "version": "3a6078fd"
+  },
+  "morpheme_emotion_overflow": {
+    "patterns": [
+      "ㅋ{5,}",
+      "ㅎ{5,}",
+      "ㅠ{5,}",
+      "ㅜ{5,}"
+    ],
+    "description": "Morpheme patterns for emotion_overflow",
+    "active": true,
+    "updated_at": "2025-06-25T21:51:54.553880",
+    "version": "5ca12f2b"
+  },
+  "compound_noun_patterns": {
+    "patterns": [
+      "[가-힣]{2,4}\\s[가-힣]{2,4}",
+      "[가-힣]{1,3}\\s[가-힣]{1,3}\\s[가-힣]{1,3}",
+      "[A-Z][a-z]+\\s[가-힣]{2,4}",
+      "[가-힣]{2,4}\\s[A-Z][a-z]+",
+      "[가-힣]+\\s[0-9]+",
+      "[0-9]+\\s[가-힣]+"
+    ],
+    "description": "Regular expression patterns for compound noun detection",
+    "active": true,
+    "updated_at": "2025-06-25T21:51:54.562909",
+    "version": "732ddb78"
+  }
+}

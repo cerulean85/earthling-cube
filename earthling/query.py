@@ -6,7 +6,7 @@
 from operator import or_
 import os, sys, yaml, random
 from earthling.connector.s3_module import generate_s3_file_key
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 from enum import Enum
@@ -67,7 +67,6 @@ def get_session():
 
 class PipeLine(Base):
     __tablename__ = "pipe_line"
-
     id = Column(Integer, primary_key=True)
     current_status = Column(String)
     create_date = Column(DateTime)
@@ -76,7 +75,6 @@ class PipeLine(Base):
 
 class PipeTaskSearch(Base):
     __tablename__ = "pipe_task_search"
-
     id = Column(Integer, primary_key=True)
     pipe_line_id = Column(Integer)
     site = Column(String)
@@ -92,10 +90,10 @@ class PipeTaskSearch(Base):
     count = Column(Integer)
     s3_url = Column(String)
     file_size = Column(Float)
+    mem_id = Column(Integer)
 
 class PipeTaskClean(Base):
     __tablename__ = "pipe_task_clean"
-
     id = Column(Integer, primary_key=True)
     pipe_line_id = Column(Integer)
     current_state = Column(String)
@@ -105,11 +103,15 @@ class PipeTaskClean(Base):
     create_date = Column(DateTime)
     s3_url = Column(String)
     file_size = Column(Float)
-    prev_task_id = Column(Integer)
+    search_task_id = Column(Integer)
+    mem_id = Column(Integer)
+    extract_noun = Column(Boolean)
+    extract_adjective = Column(Boolean)
+    extract_verb = Column(Boolean)
+
 
 class PipeTaskFrequency(Base):
     __tablename__ = "pipe_task_frequency"
-
     id = Column(Integer, primary_key=True)
     pipe_line_id = Column(Integer)
     current_state = Column(String)
@@ -119,11 +121,13 @@ class PipeTaskFrequency(Base):
     create_date = Column(DateTime)
     s3_url = Column(String)
     file_size = Column(Float)
-    prev_task_id = Column(Integer)
+    search_task_id = Column(Integer)
+    clean_task_id = Column(Integer)
+    mem_id = Column(Integer)
+
 
 class PipeTaskTfidf(Base):
     __tablename__ = "pipe_task_tfidf"
-
     id = Column(Integer, primary_key=True)
     pipe_line_id = Column(Integer)
     current_state = Column(String)
@@ -133,11 +137,12 @@ class PipeTaskTfidf(Base):
     create_date = Column(DateTime)
     s3_url = Column(String)
     file_size = Column(Float)
-    prev_task_id = Column(Integer)
+    search_task_id = Column(Integer)
+    clean_task_id = Column(Integer)
+    mem_id = Column(Integer)
 
 class PipeTaskConcor(Base):
     __tablename__ = "pipe_task_concor"
-
     id = Column(Integer, primary_key=True)
     pipe_line_id = Column(Integer)
     current_state = Column(String)
@@ -147,7 +152,9 @@ class PipeTaskConcor(Base):
     create_date = Column(DateTime)
     s3_url = Column(String)
     file_size = Column(Float)
-    prev_task_id = Column(Integer)
+    search_task_id = Column(Integer)
+    clean_task_id = Column(Integer)
+    mem_id = Column(Integer)
 
 pipe_task_tables = {
     PipeTaskStatus.SEARCH: PipeTaskSearch,
@@ -262,12 +269,19 @@ class QueryPipeTask:
     def update_state_to_pending(self, task_id):
         self.update_fields(task_id, {"current_state": PipeTaskState.PENDING.value, "end_date": datetime.now()})
 
-    def update_state_to_pending_about_other_task(self, task_type: PipeTaskStatus, prev_task_id):
+    def update_state_to_pending_about_clean_task(self, task_type: PipeTaskStatus, search_task_id):
         with get_session() as session:
             TaskTable = pipe_task_tables.get(task_type)
-            session.query(TaskTable).filter(TaskTable.prev_task_id == prev_task_id).update({"current_state": PipeTaskState.PENDING.value})
+            session.query(TaskTable).filter(TaskTable.search_task_id == search_task_id).update({"current_state": PipeTaskState.PENDING.value})
             session.commit()        
-        print(f"prev_task-[{prev_task_id}] {task_type.value} to PENDING")
+        print(f"prev_task-[{search_task_id}] {task_type.value} to PENDING")
+
+    def update_state_to_pending_about_analysis_task(self, task_type: PipeTaskStatus, clean_task_id):
+        with get_session() as session:
+            TaskTable = pipe_task_tables.get(task_type)
+            session.query(TaskTable).filter(TaskTable.clean_task_id == clean_task_id).update({"current_state": PipeTaskState.PENDING.value})
+            session.commit()        
+        print(f"prev_task-[{clean_task_id}] {task_type.value} to PENDING")
 
 
 

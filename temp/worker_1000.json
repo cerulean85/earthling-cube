@@ -1,9 +1,9 @@
 {
 	"no": 1000,
-	"thread_no": 31552,
+	"thread_no": 43524,
 	"state": "working",
 	"task": {
-		"task_no": 2,
-		"message": "{\"site\": \"naver\", \"channel\": \"blog\", \"state\": \"pending\"}"
+		"task_no": 22,
+		"message": "{\"id\": 22, \"pipe_line_id\": 22, \"current_state\": \"pending\", \"worker_ip\": null, \"start_date\": null, \"end_date\": null, \"create_date\": \"2025-06-25 19:07:31.855881\", \"s3_url\": null, \"file_size\": 0.0, \"search_task_id\": 62, \"clean_task_id\": 24, \"mem_id\": 6, \"task_type\": \"tfidf\"}"
 	}
 }

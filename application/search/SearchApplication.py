@@ -90,7 +90,7 @@ class SearchApplication:
                 self.query.update_state_to_completed(task_no)
                 self.save(task_no, channel, create_file_name, item_count)
                 print(f"Finished to collect [task-{site}-{channel}-{task_no}] data")
-                self.query.update_state_to_pending_about_other_task(PipeTaskStatus.CLEAN, task_no)
+                self.query.update_state_to_pending_about_clean_task(PipeTaskStatus.CLEAN, task_no)
             else:
                 self.query.update_state_to_pending(task_no)
                 print(f"Failed to collect data (HTML STATUS: {html_status})")

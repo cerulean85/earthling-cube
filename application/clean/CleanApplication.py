@@ -15,7 +15,7 @@ from application.clean.config_adapter import (
 )
 
 from konlpy.tag import Okt
-print("✅ KoNLPy Okt 형태소 분석기 로드 성공")
+# print("✅ KoNLPy Okt 형태소 분석기 로드 성공")
 MORPHEME_ANALYZER_AVAILABLE = True
 
 class OktAnalyzer:
@@ -65,7 +65,7 @@ class CleanApplication:
 
     def apply_semantic_clustering(self, word_list):
         """의미론적 클러스터 기반 불용어 추출"""
-        print("🧠 의미론적 클러스터 분석 중...")
+        # print("🧠 의미론적 클러스터 분석 중...")
         
         # 각 클러스터별로 단어 빈도 확인
         for cluster_name, cluster_words in SEMANTIC_CLUSTERS.items():
@@ -78,7 +78,7 @@ class CleanApplication:
     
     def apply_ngram_analysis(self, word_list):
         """N-gram 패턴 기반 불용어 분석"""
-        print("📊 N-gram 패턴 분석 중...")
+        # print("📊 N-gram 패턴 분석 중...")
         
         # Bi-gram 분석
         bigrams = [(word_list[i], word_list[i+1]) for i in range(len(word_list)-1)]
@@ -90,7 +90,7 @@ class CleanApplication:
         for bigram_tuple in NGRAM_STOPWORDS.get('bigram', []):
             if bigram_tuple in bigram_counts and bigram_counts[bigram_tuple] > 3:
                 self.semantic_stopwords.update(bigram_tuple)
-                print(f"   🎯 고빈도 Bi-gram: {' '.join(bigram_tuple)}")
+                # print(f"   🎯 고빈도 Bi-gram: {' '.join(bigram_tuple)}")
         
         # Tri-gram 분석
         trigrams = [(word_list[i], word_list[i+1], word_list[i+2]) for i in range(len(word_list)-2)]
@@ -101,7 +101,7 @@ class CleanApplication:
         for trigram_tuple in NGRAM_STOPWORDS.get('trigram', []):
             if trigram_tuple in trigram_counts and trigram_counts[trigram_tuple] > 2:
                 self.semantic_stopwords.update(trigram_tuple)
-                print(f"   🎯 고빈도 Tri-gram: {' '.join(trigram_tuple)}")
+                # print(f"   🎯 고빈도 Tri-gram: {' '.join(trigram_tuple)}")
     
     def extract_contextual_stopwords(self, word_list):
         """문맥 기반 동적 불용어 추출"""
@@ -244,17 +244,17 @@ class CleanApplication:
         return processed_tokens
 
     def execute(self, task):
-        print("🔄 설정 새로고침 시도...")
+        # print("🔄 설정 새로고침 시도...")
         refresh_all_configs()
-        print("✅ 설정 새로고침 완료.")
+        # print("✅ 설정 새로고침 완료.")
 
-        print("\n--- 현재 적용된 동적 설정 ---")
-        print(f"  - 반복 패턴 (REPEAT_PATTERNS): {len(REPEAT_PATTERNS)}개")
-        print(f"  - N-gram 불용어 (NGRAM_STOPWORDS): bigrams={len(NGRAM_STOPWORDS.get('bigram', []))}, trigrams={len(NGRAM_STOPWORDS.get('trigram', []))}")
-        print(f"  - 무의미 접사 (MEANINGLESS_AFFIXES): prefixes={len(MEANINGLESS_AFFIXES.get('prefix', []))}, suffixes={len(MEANINGLESS_AFFIXES.get('suffix', []))}, infixes={len(MEANINGLESS_AFFIXES.get('infix', []))}")
-        print(f"  - 문맥 불용어 (CONTEXT_STOPWORDS): {len(CONTEXT_STOPWORDS)}개")
-        print(f"  - 품사별 최소 길이 (POS_MIN_LENGTH): {POS_MIN_LENGTH}")
-        print("--------------------------\n")
+        # print("\n--- 현재 적용된 동적 설정 ---")
+        # print(f"  - 반복 패턴 (REPEAT_PATTERNS): {len(REPEAT_PATTERNS)}개")
+        # print(f"  - N-gram 불용어 (NGRAM_STOPWORDS): bigrams={len(NGRAM_STOPWORDS.get('bigram', []))}, trigrams={len(NGRAM_STOPWORDS.get('trigram', []))}")
+        # print(f"  - 무의미 접사 (MEANINGLESS_AFFIXES): prefixes={len(MEANINGLESS_AFFIXES.get('prefix', []))}, suffixes={len(MEANINGLESS_AFFIXES.get('suffix', []))}, infixes={len(MEANINGLESS_AFFIXES.get('infix', []))}")
+        # print(f"  - 문맥 불용어 (CONTEXT_STOPWORDS): {len(CONTEXT_STOPWORDS)}개")
+        # print(f"  - 품사별 최소 길이 (POS_MIN_LENGTH): {POS_MIN_LENGTH}")
+        # print("--------------------------\n")
           
         search_task_id = task["search_task_id"]
         query = QueryPipeTaskSearch()
@@ -279,8 +279,8 @@ class CleanApplication:
         # 도메인 자동 감지 및 도메인별 불용어 추가 (외부 설정 파일 사용)
         detected_domain = self.detect_domain(target_list)
         domain_stopwords = load_domain_stopwords(detected_domain)
-        if domain_stopwords:
-            print(f"🏷️ 감지된 도메인: {detected_domain} (불용어 {len(domain_stopwords)}개 추가)")
+        # if domain_stopwords:
+        #     print(f"🏷️ 감지된 도메인: {detected_domain} (불용어 {len(domain_stopwords)}개 추가)")
         
         target_pos = {"Noun", "ProperNoun", "Verb", "Adjective"}  # Okt 품사 태그
         
@@ -314,18 +314,18 @@ class CleanApplication:
                     filtered_words += 1
             pos_filited_list.append(filtered)
         
-        print(f"🔍 고급 필터링 결과: {total_words}개 → {filtered_words}개 (제거율: {(1-filtered_words/total_words)*100:.1f}%)")
+        # print(f"🔍 고급 필터링 결과: {total_words}개 → {filtered_words}개 (제거율: {(1-filtered_words/total_words)*100:.1f}%)")
         morph_data = [[list(pair) for pair in sublist] for sublist in pos_filited_list]
         
         converted = cmn.convert_morph_to_json(morph_data)
-        for cvt in converted:
-            print(cvt)
+        # for cvt in converted:
+        #     print(cvt)
 
         # 샘플 결과 출력 (처음 3개 문서의 단어들)
-        for i, doc in enumerate(morph_data[:3]):
-          if doc:  # 비어있지 않은 경우만
-              words = [pair[0] for pair in doc]
-              print(f"   문서 {i+1}: {', '.join(words[:10])}{'...' if len(words) > 10 else ''}")
+        # for i, doc in enumerate(morph_data[:3]):
+        #   if doc:  # 비어있지 않은 경우만
+        #       words = [pair[0] for pair in doc]
+              # print(f"   문서 {i+1}: {', '.join(words[:10])}{'...' if len(words) > 10 else ''}")
         
         # 주석 해제하여 실제 저장
         filename = cmn.get_save_filename(cmn.AppType.CLEAN)

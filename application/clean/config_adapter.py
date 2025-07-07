@@ -32,7 +32,7 @@ def refresh_all_configs():
            COMPOUND_NOUN_PATTERNS, SEMANTIC_CLUSTERS, REPEAT_PATTERNS, NGRAM_STOPWORDS, \
            MEANINGLESS_AFFIXES, CONTEXT_STOPWORDS, POS_MIN_LENGTH
 
-    print("🔄 모든 설정을 DynamoDB에서 새로고침합니다...")
+    # print("🔄 모든 설정을 DynamoDB에서 새로고침합니다...")
     
     config_manager = get_config_manager()
     config_manager._clear_cache()
@@ -117,10 +117,10 @@ def refresh_all_configs():
         POS_MIN_LENGTH.clear()
         POS_MIN_LENGTH.update(item.get('settings', {}))
 
-        print("✅ 모든 정적 설정 DynamoDB에서 로드 성공")
+        # print("✅ 모든 정적 설정 DynamoDB에서 로드 성공")
 
     except Exception as e:
-        print(f"⚠️ 정적 설정 로드 실패, 기본값 사용: {e}")
+        # print(f"⚠️ 정적 설정 로드 실패, 기본값 사용: {e}")
         REPEAT_PATTERNS[:] = [
           r'^(.)\\1+$', r'^[ㅋㅎㅠㅜㅏㅓㅗㅜㅡㅣㅛㅕㅑㅒㅖ]+$', r'^\\d+$', r'^[a-zA-Z]+$', r'^[!@#$%^&*(),.?\":{}|<>]+$'
         ]
@@ -170,7 +170,7 @@ def remove_multi_word_expression(expression):
             return True
         return False
     except Exception as e:
-        print(f"❌ 복합명사 제거 실패: {e}")
+        # print(f"❌ 복합명사 제거 실패: {e}")
         return False
 
 def validate_compound_expression(expression):
@@ -206,9 +206,9 @@ def export_compound_summary():
     except Exception as e:
         return {'error': str(e)}
 
-print(f"📊 DynamoDB에서 로드된 설정:")
-print(f"   - 불용어: {len(STOPWORDS)}개")
-print(f"   - 도메인 카테고리: {len(DOMAIN_STOPWORDS)}개")
-print(f"   - 복합명사: {len(MULTI_WORD_EXPRESSIONS)}개")
-print(f"   - 형태소 패턴: {len(MORPHEME_PATTERNS)}개")
-print(f"   - 의미론적 클러스터: {len(SEMANTIC_CLUSTERS)}개")
+# print(f"📊 DynamoDB에서 로드된 설정:")
+# print(f"   - 불용어: {len(STOPWORDS)}개")
+# print(f"   - 도메인 카테고리: {len(DOMAIN_STOPWORDS)}개")
+# print(f"   - 복합명사: {len(MULTI_WORD_EXPRESSIONS)}개")
+# print(f"   - 형태소 패턴: {len(MORPHEME_PATTERNS)}개")
+# print(f"   - 의미론적 클러스터: {len(SEMANTIC_CLUSTERS)}개")

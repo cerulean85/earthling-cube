@@ -31,11 +31,13 @@ class ParsedLine:
 
 class SearchSiteType(Enum):
     NAVER = "naver"
+    GOOGLE = "google"
 
 class SearchChannelType(Enum):
     WEB = "web"
     BLOG = "blog"
     NEWS = "news"
+    PORTAL = "portal"
 
 
 search_class = {
@@ -44,6 +46,9 @@ search_class = {
       SearchChannelType.BLOG.value: NaverBlog, 
       SearchChannelType.NEWS.value: NaverNews
   },
+  # SearchSiteType.GOOGLE.value: {
+  #     SearchChannelType.WEB.value: GooglePortal
+  # }
 }
 
 class SearchApplication:
@@ -146,8 +151,10 @@ class SearchApplication:
         try:
             with open(create_file_name, 'r', encoding='utf-8') as out_file:
                 for lines in out_file:
+                    print("Lines => " + lines)
                     line = lines.split("\t")
                     parsed = self.parse_line(line, regex, pipe_line_id, site_alias, channel)
+                    # print(parsed)
                     data_list.append(parsed)
                     if len(data_list) > 100:
                         cmn.save_to_s3_and_update(self.query, task_no, create_file_name)

@@ -25,6 +25,7 @@ class ConcorApplication:
         co_matrix = defaultdict(lambda: defaultdict(int))
         vocab = set()
         word_pos_map = {}
+        word_count = defaultdict(int)  # 각 단어의 개별 출현 횟수
 
         # 각 문장에서 단어들 추출 및 조합 (품사 정보 포함)
         for item in data:
@@ -37,6 +38,10 @@ class ConcorApplication:
                     word_pos_map[word] = pos  # 단어-품사 매핑 저장
             
             vocab.update(words)
+            # 각 단어의 개별 출현 횟수 카운트 (문장 내 중복 제거)
+            for word in set(words):
+                word_count[word] += 1
+            
             # 중복 제거 후 단어쌍 생성 (동일 문장 내 동시 출현)
             for w1, w2 in combinations(set(words), 2):
                 co_matrix[w1][w2] += 1
@@ -61,16 +66,32 @@ class ConcorApplication:
         filtered['pos1'] = filtered['word1'].map(word_pos_map)
         filtered['pos2'] = filtered['word2'].map(word_pos_map)
         
+        # 각 단어의 개별 출현 횟수 추가
+        filtered['word1Frequency'] = filtered['word1'].map(word_count)
+        filtered['word2Frequency'] = filtered['word2'].map(word_count)
+        
         # 컬럼 순서 재정렬
-        filtered = filtered[['word1', 'pos1', 'word2', 'pos2', 'count']]
+        filtered = filtered[['word1', 'pos1', 'word1Frequency', 'word2', 'pos2', 'word2Frequency', 'count']]
         
         # count별 상위 100개만 선택
         top_100 = filtered.nlargest(100, 'count')
 
         buffer = StringIO()
-        top_100.to_csv(buffer, encoding='cp949', index=False)
+        # NDJSON 형태로 저장 (각 행을 JSON 객체로)
+        for _, row in top_100.iterrows():
+            json_line = {
+                "word1": row['word1'],
+                "pos1": row['pos1'],
+                "word1Frequency": int(row['word1Frequency']),
+                "word2": row['word2'], 
+                "pos2": row['pos2'],
+                "word2Frequency": int(row['word2Frequency']),
+                "count": int(row['count'])
+            }
+            buffer.write(json.dumps(json_line, ensure_ascii=False) + '\n')
+        
         filename = cmn.get_save_filename(cmn.AppType.CONCOR)
-        filename = filename.replace(".json", ".csv")
+        filename = filename.replace(".json", ".ndjson")
         cmn.save_to_s3_and_update_with_buffer(query, task_no, filename, buffer)
         query.update_state_to_completed(task_no)     
 

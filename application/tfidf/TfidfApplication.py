@@ -46,7 +46,7 @@ class TfidfApplication:
         measure_list = []
         top_n = 10
 
-        for row in tfidf_matrix.toarray():
+        for sentence_idx, row in enumerate(tfidf_matrix.toarray()):
             top_indices = row.argsort()[::-1][:top_n]
             top_features = []
             for idx in top_indices:
@@ -58,7 +58,11 @@ class TfidfApplication:
                         "pos": pos,
                         "value": round(row[idx], 6)
                     })
-            measure_list.append(top_features)
+            
+            measure_list.append({
+                "sentence_index": sentence_idx,
+                "tokens": top_features
+            })
         
         buffer = StringIO()
         filename = cmn.get_save_filename(cmn.AppType.TFIDF)

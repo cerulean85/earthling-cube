@@ -1,13 +1,26 @@
-import settings, yaml, os
+import yaml, os
 import http.cookiejar as cookielib
 
 def get_chrome_driver_path():
-    app_sttings_path = settings.APP_SETTINGS_PATH
-    app_settings = None
+    """Chrome driver 경로를 가져옵니다."""
+    # 프로젝트 루트에서 app_settings.yaml 찾기
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    app_settings_path = os.path.join(project_root, 'app_settings.yaml')
+    
     chrome_driver_path = ''
-    with open(app_sttings_path) as f:
-        app_settings = yaml.load(f, Loader=yaml.FullLoader)
-        chrome_driver_path = app_settings["chrome_driver_path"]
+    
+    if not os.path.exists(app_settings_path):
+        print(f"Warning: {app_settings_path} not found")
+        return ''
+        
+    try:
+        with open(app_settings_path, 'r', encoding='utf-8') as f:
+            app_settings = yaml.load(f, Loader=yaml.FullLoader)
+            chrome_driver_path = app_settings.get("chrome_driver_path", "")
+    except Exception as e:
+        print(f"Error reading settings: {e}")
+        return ''
+    
     return chrome_driver_path
 
 def get_cookie_jar(site, data_name):

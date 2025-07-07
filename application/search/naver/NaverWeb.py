@@ -1,3 +1,4 @@
+import re
 import os, sys, time
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service  # Service 추가
@@ -19,6 +20,8 @@ class NaverWeb(NaverBase):
         url = "https://search.naver.com/search.naver?query="+str(keyword)+"&nso=&where=web&sm=tab_viw.all"
     else:
         url = "https://search.naver.com/search.naver?where=web&query="+str(keyword)+"&sm=tab_opt&dup_remove=1&post_blogurl=&post_blogurl_without=&start="+str(start)+"&nso=so%3Ar%2Ca%3Aall%2Cp%3Afrom"+(date_start)+"to"+(date_end)
+
+    # print(url)
     return url
 
   def search(
@@ -84,7 +87,7 @@ class NaverWeb(NaverBase):
 
             try:
                 if len(web_list) == 0:
-                    print(f"The data for [{tar_date}] does not exist.")
+                    # print(f"The data for [{tar_date}] does not exist.")
                     total_date_count -= 1
                     break
             except:
@@ -105,7 +108,7 @@ class NaverWeb(NaverBase):
                     title_text = ""
                     
                 try:
-                    content_text = i.find("div", {"class" : "api_txt_lines"}).text.strip()
+                    content_text = re.sub(r'\s+', ' ', i.find("a", {"class": "api_txt_lines"}).text.strip())
                 except:
                     content_text = ""
                         
@@ -118,6 +121,9 @@ class NaverWeb(NaverBase):
                     
                     count_web = count_web + 1
                     search_text = title_text + '\t' + a_link +'\t'+ content_text
+
+                    # print("Search Text: ", search_text)
+
                     out_file.write(search_text + '\n')
                 except Exception as err:
                     # print(err)

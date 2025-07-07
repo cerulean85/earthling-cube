@@ -56,3 +56,13 @@ naver:
   search_data_save_path: "/data/crawler/file_naver_data"
   alias: 'naver'
   penalty_delay_time: 300
+
+google:
+  portal:
+    delay_time: 30
+    max_count: 2000
+    unit_count: 50
+
+  search_data_save_path: "/data/crawler/file_google_data"
+  alias: 'google'
+  penalty_delay_time: 300    

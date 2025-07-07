@@ -40,14 +40,14 @@ class DynamoDBConfigManager:
             self.dynamodb = boto3.resource('dynamodb', region_name=region_name)
             response = self.dynamodb.meta.client.list_tables()
             table_names = response['TableNames']
-            print(table_names)
+            # print(table_names)
             if self.table_name in table_names:
-              print("✅ 테이블이 존재합니다.")
+              # print("✅ 테이블이 존재합니다.")
               self.table = self.dynamodb.Table(table_name)
               self._table_exists = True
-              print(f"✅ DynamoDB 테이블 '{table_name}' 연결 성공")
+              # print(f"✅ DynamoDB 테이블 '{table_name}' 연결 성공")
             else:
-              print("❌ 테이블이 존재하지 않습니다.")
+              # print("❌ 테이블이 존재하지 않습니다.")
               self._table_exists = False                                
         except Exception as e:
             print(f"❌ DynamoDB 연결 실패: {e}")
@@ -69,7 +69,7 @@ class DynamoDBConfigManager:
     def create_table_if_not_exists(self):
         """DynamoDB 테이블이 없으면 생성"""
         if not self._table_exists:
-            print("Table이 없어서 생성중...")
+            # print("Table이 없어서 생성중...")
             try:
                 # 테이블 스키마 정의
                 table_schema = {
@@ -111,13 +111,13 @@ class DynamoDBConfigManager:
                 }
 
                 
-                print(f"🔨 DynamoDB 테이블 '{self.table_name}' 생성 중...")
+                # print(f"🔨 DynamoDB 테이블 '{self.table_name}' 생성 중...")
                 table = self.dynamodb.create_table(**table_schema)
                 table.wait_until_exists()
                 
                 self.table = table
                 self._table_exists = True
-                print(f"✅ DynamoDB 테이블 '{self.table_name}' 생성 완료")
+                # print(f"✅ DynamoDB 테이블 '{self.table_name}' 생성 완료")
                 
             except Exception as e:
                 print(f"❌ DynamoDB 테이블 생성 실패: {e}")
@@ -177,7 +177,7 @@ class DynamoDBConfigManager:
                     self._set_cache(cache_key, stopwords)
                     return stopwords
             
-            print(f"⚠️ 불용어 카테고리 '{category}'를 찾을 수 없습니다.")
+            # print(f"⚠️ 불용어 카테고리 '{category}'를 찾을 수 없습니다.")
             return set()
             
         except Exception as e:
@@ -276,7 +276,7 @@ class DynamoDBConfigManager:
             self._clear_cache(f"stopwords_{category}")
             self._clear_cache("all_stopwords")
             
-            print(f"✅ 불용어 {len(words)}개를 '{category}' 카테고리에 추가했습니다.")
+            # print(f"✅ 불용어 {len(words)}개를 '{category}' 카테고리에 추가했습니다.")
             return True
             
         except Exception as e:
@@ -310,7 +310,7 @@ class DynamoDBConfigManager:
             self._clear_cache(f"stopwords_{category}")
             self._clear_cache("all_stopwords")
             
-            print(f"✅ 불용어 {len(words)}개를 '{category}' 카테고리에서 제거했습니다.")
+            # print(f"✅ 불용어 {len(words)}개를 '{category}' 카테고리에서 제거했습니다.")
             return True
             
         except Exception as e:
@@ -346,7 +346,7 @@ class DynamoDBConfigManager:
             # 캐시 무효화
             self._clear_cache(f"compound_nouns_{category}")
             
-            print(f"✅ 복합명사 {len(expressions)}개를 '{category}' 카테고리에 추가했습니다.")
+            # print(f"✅ 복합명사 {len(expressions)}개를 '{category}' 카테고리에 추가했습니다.")
             return True
             
         except Exception as e:

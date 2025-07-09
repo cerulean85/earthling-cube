@@ -53,7 +53,7 @@ class Logging:
 
         # 파일명을 timestamp로 지정
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        filename = f'logs/logfile_{timestamp}.log'
+        filename = f'./logs/logfile_{timestamp}.log'
         timedfilehandler = logging.handlers.TimedRotatingFileHandler(filename=filename, when='midnight', interval=1, encoding='utf-8')
         timedfilehandler.setFormatter(formatter)
         timedfilehandler.suffix = "%Y%m%d"

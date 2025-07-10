@@ -151,7 +151,7 @@ class SearchApplication:
         try:
             with open(create_file_name, 'r', encoding='utf-8') as out_file:
                 for lines in out_file:
-                    print("Lines => " + lines)
+                    # print("Lines => " + lines)
                     line = lines.split("\t")
                     parsed = self.parse_line(line, regex, pipe_line_id, site_alias, channel)
                     # print(parsed)

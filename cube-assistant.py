@@ -19,13 +19,23 @@ from application.concor.ConcorApplication import ConcorApplication
 
 def create_dir(dir_path):
     if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    os.chmod(dir_path, 0o77)  
+        # umask를 0으로 설정하여 파일 생성 시 최대 권한 부여
+        old_umask = os.umask(0)
+        try:
+            os.makedirs(dir_path, mode=0o777)
+        finally:
+            os.umask(old_umask)
+    os.chmod(dir_path, 0o777)
 
 def set_log_dir():
     log_file = settings.LOG_DATA_SAVE_PATH
     if not os.path.exists(log_file):
-        os.makedirs(log_file)
+        # umask를 0으로 설정하여 파일 생성 시 최대 권한 부여
+        old_umask = os.umask(0)
+        try:
+            os.makedirs(log_file, mode=0o777)
+        finally:
+            os.umask(old_umask)
     os.chmod(log_file, 0o777)
 
 def get_app_settings():

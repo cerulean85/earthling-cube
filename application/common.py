@@ -34,7 +34,7 @@ def get_site_settings(site='', channel=''):
 def create_dir(dir_path):
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    os.chmod(dir_path, 0o77)  
+    os.chmod(dir_path, 0o777)  
 
 def set_dir(app_type: AppType):
     app_settings = get_settings()

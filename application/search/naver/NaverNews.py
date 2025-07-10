@@ -36,8 +36,7 @@ class NaverNews(NaverBase):
         out_filepath=''):
         # __init__
         now = datetime.now()
-        chrome_driver_path = self.get_chrome_driver_path()
-        
+                
         chrome_options = Options()
         chrome_options.add_argument('--headless')  # 예시: headless 모드
         chrome_options.add_argument('--no-sandbox')

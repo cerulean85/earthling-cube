@@ -1,8 +1,8 @@
 db:
-  kkennibdb: 'postgresql://kkennibdb_owner:npg_jkHrWBdgzp24@ep-muddy-lake-a1424rms-pooler.ap-southeast-1.aws.neon.tech/kkennibdb?sslmode=require'
+  kkennibdb: 'postgresql://kkennibdb_owner:npg_jkHrWBdgzp24@ep-muddy-lake-a1424rms-pooler.ap-southeast-1.aws.neon.tech/kkennibdb?sslmode=require&channel_binding=require'
 
 s3:
-  bucket_name: 'kkennib-s3'
+  bucket_name: 'earthling-cube-s3'
   region: 'ap-northeast-2'
 
 rpc:

@@ -1,7 +1,9 @@
 import time, threading, yaml, json
+from queue import Empty
 from .Com import Com
 from .Logging import log
 from multiprocessing import Process, Value
+
 
 class ComWorker(Com):
 
@@ -34,11 +36,15 @@ class ComWorker(Com):
             channel = date_desc["task_type"]
 
         self.monitor.write_worker(worker_meta)
-        print(f"Worker-[{self.worker_no.value}] is starting task-[{task['task_no']}] for '{channel}'. (Thread: {threading.get_native_id()})")
+        print(
+            f"Worker-[{self.worker_no.value}] is starting task-[{task['task_no']}] for '{channel}'. (Thread: {threading.get_native_id()})"
+        )
 
         self.action(task)
         self.is_working.value = 0
-        print(f"Worker-[{self.worker_no.value}] has completed task-[{task['task_no']}] for '{channel}'.")
+        print(
+            f"Worker-[{self.worker_no.value}] has completed task-[{task['task_no']}] for '{channel}'."
+        )
 
         worker_meta["state"] = "idle"
         self.monitor.write_worker(worker_meta)
@@ -82,7 +88,9 @@ class WorkerPool:
                         self.workers.append(worker)
                     break
 
-            print(f"WorkerPool initialization complete: {len(self.workers)} workers created")
+            print(
+                f"WorkerPool initialization complete: {len(self.workers)} workers created"
+            )
         except Exception as e:
             print(f"WorkerPool initialization error: {e}")
 
@@ -119,20 +127,24 @@ class WorkerPool:
             print(f"WorkerPool({id(self)}) - task_queue is None.")
             return False
 
-        task_count = self.task_queue.qsize()
-        if task_count > 0:
-            task = self.task_queue.get()
-            print(
-                f"WorkerPool({id(self)}) - Starting task: {task.get('task_no', 'unknown')}"
-            )
-            self.work(task)
-            return True
-        return False
+        try:
+            task = self.task_queue.get_nowait()
+        except Empty:
+            return False
+        except (NotImplementedError, AttributeError, OSError) as err:
+            print(f"WorkerPool({id(self)}) - queue read failed: {err}")
+            return False
+
+        print(
+            f"WorkerPool({id(self)}) - Starting task: {task.get('task_no', 'unknown')}"
+        )
+        self.work(task)
+        return True
 
     def work(self, task):
         for worker in self.workers:
             if worker.is_working.value == 0:
-                worker.lock()                
+                worker.lock()
                 p = Process(target=worker.work, args=(task,))
                 p.start()
                 break

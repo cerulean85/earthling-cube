@@ -4,12 +4,17 @@ import time
 from earthling.connector.s3_module import upload_file_to_s3, upload_from_buffer_to_s3
 from earthling.service.Logging import log
 
+
+_fallback_logged_paths = set()
+
+
 class AppType(Enum):
     SEARCH = "search"
     CLEAN = "clean"
     FREQUENCY = "frequency"
     TFIDF = "tfidf"
     CONCOR = "concor"
+
 
 def get_settings():
     app_sttings_path = settings.APP_SETTINGS_PATH
@@ -18,45 +23,69 @@ def get_settings():
         app_settings = yaml.load(f, Loader=yaml.FullLoader)
     return app_settings
 
-def get_site_settings(site='', channel=''):
-    if site != '': 
-      set_site_dir(site)
-            
+
+def get_site_settings(site="", channel=""):
     app_sttings_path = settings.APP_SETTINGS_PATH
     app_settings = None
     with open(app_sttings_path) as f:
         app_settings = yaml.load(f, Loader=yaml.FullLoader)
         app_settings = app_settings[site]
-        if channel != '':
+        if "search_data_save_path" in app_settings:
+            app_settings["search_data_save_path"] = create_dir(
+                app_settings["search_data_save_path"]
+            )
+        if channel != "":
             app_settings = app_settings.get(channel)
     return app_settings
 
+
 def create_dir(dir_path):
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    os.chmod(dir_path, 0o777)  
+    global _fallback_logged_paths
+    target_path = dir_path
+    try:
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+        os.chmod(target_path, 0o777)
+        return target_path
+    except OSError as err:
+        # Read-only FS / Permission denied 환경에서는 프로젝트 내부 경로로 fallback
+        if os.path.isabs(dir_path):
+            fallback_path = os.path.join(".", dir_path.lstrip("/"))
+        else:
+            fallback_path = os.path.join(".", dir_path)
+
+        if not os.path.exists(fallback_path):
+            os.makedirs(fallback_path, exist_ok=True)
+        os.chmod(fallback_path, 0o777)
+        if dir_path not in _fallback_logged_paths:
+            print(f"create_dir fallback: '{dir_path}' -> '{fallback_path}' ({err})")
+            _fallback_logged_paths.add(dir_path)
+        return fallback_path
+
 
 def set_dir(app_type: AppType):
     app_settings = get_settings()
     dir_path = app_settings[f"{app_type.value}_data_save_path"]
-    create_dir(dir_path)    
+    return create_dir(dir_path)
+
 
 def set_site_dir(site):
     app_settings = get_settings()
     app_settings = app_settings[site]
     dir_path = app_settings["search_data_save_path"]
-    create_dir(dir_path)
+    return create_dir(dir_path)
+
 
 def get_out_filepath(app_type: AppType):
-    set_dir(app_type)
-    app_settings = get_settings()    
-    save_path = app_settings[f"{app_type.value}_data_save_path"]
+    save_path = set_dir(app_type)
     now = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
     return f"{save_path}/{app_type.value}_{now}.json"
+
 
 def get_save_filename(app_type: AppType):
     now = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
     return f"{app_type.value}_{now}.json"
+
 
 def save_to_s3_and_update(query, task_no, file_name):
     try:
@@ -65,6 +94,7 @@ def save_to_s3_and_update(query, task_no, file_name):
         print(f">> File: [{file_name}] Saved to S3.")
     except Exception as err:
         print("Save: S3 File >> ", err)
+
 
 def save_to_s3_and_update_with_buffer(query, task_no, file_name, buffer):
     try:
@@ -75,16 +105,13 @@ def save_to_s3_and_update_with_buffer(query, task_no, file_name, buffer):
         print("Save: S3 Buffer >> ", err)
 
 
-
 def convert_morph_to_json(morph_data):
     result = []
     for idx, sentence in enumerate(morph_data):
         tokens = [{"word": token[0], "pos": token[1]} for token in sentence]
-        result.append({
-            "sentence_index": idx,
-            "tokens": tokens
-        })
+        result.append({"sentence_index": idx, "tokens": tokens})
     return result
+
 
 def convert_json_to_morph(json_data):
     original_format = []
@@ -93,4 +120,3 @@ def convert_json_to_morph(json_data):
         token_list = [[token["word"], token["pos"]] for token in tokens]
         original_format.append(token_list)
     return original_format
-

@@ -33,15 +33,17 @@ def upload_file_to_s3(file_path):
         print(f"❌ Failed to search data: {e}")
         return "", 0
 
+
 def upload_from_buffer_to_s3(buffer, file_path):
     s3_file_key = generate_s3_file_key(file_path)
 
     s3 = boto3.client("s3")
     bucket_name = get_bucket_name()
     s3.put_object(
-        Bucket=bucket_name,         # 🔁 버킷 이름
-        Key=s3_file_key,   # 🔁 저장할 S3 경로
-        Body=buffer.getvalue()
+        Bucket=bucket_name,  # 🔁 버킷 이름
+        Key=s3_file_key,  # 🔁 저장할 S3 경로
+        ACL="public-read",
+        Body=buffer.getvalue(),
     )
 
     try:
@@ -55,7 +57,7 @@ def upload_from_buffer_to_s3(buffer, file_path):
         return "", 0
 
 
-def read_file_from_s3(url):    
+def read_file_from_s3(url):
     response = requests.get(url)
 
     content = ""
